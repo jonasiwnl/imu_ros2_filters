@@ -1,6 +1,6 @@
 import rclpy
 
-class JitterFilter(rclpy.Node):
+class JitterFilter(rclpy.node.Node):
     # last_stamp = (0, 0)
     diff = 0.1
     publisher = None
