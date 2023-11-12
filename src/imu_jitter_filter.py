@@ -1,6 +1,8 @@
 import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Imu
 
-class JitterFilter(rclpy.node.Node):
+class JitterFilter(Node):
     # last_stamp = (0, 0)
     diff = 0.1
     publisher = None
@@ -11,8 +13,12 @@ class JitterFilter(rclpy.node.Node):
         super().__init__("imu_jitter_filter_node")
 
         self.subscriber = self.create_subscription(
-            "imu/data_filtered", 10, self.filter_data)
-        self.publisher = self.create_publisher("imu/data_jitter_filtered", 10)
+            Imu,
+            "imu/data_filtered",
+            self.filter_data,
+            10
+        )
+        self.publisher = self.create_publisher(Imu, "imu/data_jitter_filtered", 10)
 
     def filter_data(self, data) -> None:
         self.get_logger().info("Filter data called", throttle_duration_sec=1.0)
@@ -25,12 +31,12 @@ class JitterFilter(rclpy.node.Node):
         lin_accel_ok = \
             self._filter(data.linear_acceleration, self.prev_data.linear_acceleration)
         ang_vel_ok = \
-            self._filter(data.angular_velocity, prev_data.angular_velocity)
+            self._filter(data.angular_velocity, self.prev_data.angular_velocity)
         
         if lin_accel_ok and ang_vel_ok:
             self.publisher.publish(data)
 
-        prev_data = data
+        self.prev_data = data
 
     def _filter(self, new_point, prev_point) -> bool:
         return abs(new_point.x - prev_point.x) >= self.diff and \
