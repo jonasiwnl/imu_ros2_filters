@@ -14,15 +14,13 @@ class JitterFilter(Node):
 
         self.subscriber = self.create_subscription(
             Imu,
-            "imu/data_filtered",
+            "bno055/imu",
             self.filter_data,
             10
         )
         self.publisher = self.create_publisher(Imu, "imu/data_jitter_filtered", 10)
 
     def filter_data(self, data) -> None:
-        self.get_logger().info("Filter data called", throttle_duration_sec=1.0)
-
         # for first function call. this sucks and needs to be cleaned
         if not self.prev_data:
             self.prev_data = data
@@ -33,7 +31,7 @@ class JitterFilter(Node):
         ang_vel_ok = \
             self._filter(data.angular_velocity, self.prev_data.angular_velocity)
         
-        if lin_accel_ok and ang_vel_ok:
+        if lin_accel_ok or ang_vel_ok:
             self.publisher.publish(data)
 
         self.prev_data = data
