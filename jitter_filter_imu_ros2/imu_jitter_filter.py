@@ -2,23 +2,23 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 
+
 class JitterFilter(Node):
-    # last_stamp = (0, 0)
     diff = 0.1
     publisher = None
     subscriber = None
     prev_data = None
 
     def __init__(self):
-        super().__init__("imu_jitter_filter_node")
+        super().__init__('imu_jitter_filter_node')
 
         self.subscriber = self.create_subscription(
             Imu,
-            "bno055/imu",
+            'bno055/imu',
             self.filter_data,
             10
         )
-        self.publisher = self.create_publisher(Imu, "imu/data_jitter_filtered", 10)
+        self.publisher = self.create_publisher(Imu, 'imu/data_jitter_filtered', 10)
 
     def filter_data(self, data) -> None:
         # for first function call. this sucks and needs to be cleaned
@@ -46,5 +46,5 @@ def main():
     node = JitterFilter()
     rclpy.spin(node)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
