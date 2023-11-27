@@ -1,5 +1,4 @@
 from sensor_msgs.msg import Imu, MagneticField, Header
-from tf2_ros import fromMsg, toMsg
 
 import numpy as np
 
@@ -26,9 +25,9 @@ class ImuTransformer():
         return transformed
     
     def _transform_spatial(self, data):
-        converted = fromMsg(data)
+        converted = data.from_msg()
         converted = TRANSFORM @ converted # Matmul
-        return toMsg(converted)
+        return converted.to_msg()
 
     # covariance is always postive
     # 0 1 2    4 3 5
