@@ -1,5 +1,5 @@
 from sensor_msgs.msg import Imu, MagneticField, Header
-from tf2_py import fromMsg, toMsg
+from tf2_ros import fromMsg, toMsg
 
 import numpy as np
 
@@ -11,17 +11,17 @@ TRANSFORM = np.array([
 ])
 
 class ImuTransformer():
-    def __init__(self, imu_publisher, mag_publisher):
+    def __init__(self, imu_publisher, mag_publisher, frame_id='imu'):
         self.imu_publisher = imu_publisher
         self.mag_publisher = mag_publisher
-        self.data = None
+        self.frame_id = frame_id
 
     def _transform_header(self, header):
         transformed: Header = Header()
 
         transformed.seq = header.seq
         transformed.stamp = header.stamp
-        transformed.frame_id = self.data[2] # TODO (?)
+        transformed.frame_id = self.frame_id
 
         return transformed
     
